@@ -1,1 +1,54 @@
+name: 班表提醒
 
+# GitHub 的 cron 用 UTC 时间：14:00 UTC = 北京时间 22:00。
+# 注意：GitHub 的定时会有几分钟到十几分钟的延迟，属正常现象。
+# 想让时间准到分钟：用 cron-job.org 之类的免费服务调用本 workflow 的 workflow_dispatch（见 README）。
+on:
+  schedule:
+    - cron: "0 14 * * *"
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "模拟某一天晚上发出的提醒，如 2026-10-15；留空=按今天算明天"
+        required: false
+        default: ""
+      dry_run:
+        description: "只打印不发送（true / false）"
+        required: false
+        default: "false"
+
+permissions:
+  contents: read
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: 取出仓库内容
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 自检（读班表、看配置）
+        working-directory: shift-reminder
+        env:
+          WECOM_WEBHOOK_URL: ${{ secrets.WECOM_WEBHOOK_URL }}
+          SCHEDULE_FILE: ../banbiao.csv
+        run: python main.py --check
+
+      - name: 发送提醒
+        working-directory: shift-reminder
+        env:
+          WECOM_WEBHOOK_URL: ${{ secrets.WECOM_WEBHOOK_URL }}
+          SCHEDULE_FILE: ../banbiao.csv
+          TARGET_DATE: ${{ inputs.date }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          ARGS=""
+          if [ -n "$TARGET_DATE" ]; then ARGS="$ARGS --date $TARGET_DATE"; fi
+          if [ "$DRY_RUN" = "true" ]; then ARGS="$ARGS --dry-run"; else ARGS="$ARGS --send"; fi
+          python main.py $ARGS
