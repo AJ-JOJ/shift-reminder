@@ -4,7 +4,7 @@ name: 班表提醒
 # 注意：GitHub 的定时会有几分钟到十几分钟的延迟，属正常现象。
 on:
   schedule:
-    - cron: "0 14 * * *"
+    - cron: "15 16 * * *"
   workflow_dispatch:
     inputs:
       date:
