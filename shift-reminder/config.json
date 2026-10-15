@@ -1,1 +1,9 @@
-
+{
+  "_说明": "本文件可留空不管；要改行为时才改这里。命令行/环境变量优先级更高。",
+  "schedule_file": "banbiao.csv",
+  "skip_shifts": ["下大夜"],
+  "remind_days_ahead": 1,
+  "remind_at": "22:00",
+  "channel": "wecom",
+  "timezone_offset_hours": 8
+}
