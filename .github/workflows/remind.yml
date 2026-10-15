@@ -2,7 +2,6 @@ name: 班表提醒
 
 # GitHub 的 cron 用 UTC 时间：14:00 UTC = 北京时间 22:00。
 # 注意：GitHub 的定时会有几分钟到十几分钟的延迟，属正常现象。
-# 想让时间准到分钟：用 cron-job.org 之类的免费服务调用本 workflow 的 workflow_dispatch（见 README）。
 on:
   schedule:
     - cron: "0 14 * * *"
